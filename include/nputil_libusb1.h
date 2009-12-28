@@ -7,6 +7,8 @@
  *
  */
 
+#ifndef NPUTIL_LIBUSB1_H
+#define NPUTIL_LIBUSB1_H
 #include "libusb.h"
 
 typedef struct {
@@ -18,9 +20,17 @@ typedef struct {
 	int _is_inited;
 } nputil_libusb1_struct;
 
-nputil_libusb1_struct* nputil_libusb1_create_struct();
-void nputil_libusb1_delete_struct();
-int nputil_libusb1_init(nputil_libusb1_struct* s);
-int nputil_libusb1_count(nputil_libusb1_struct* s, int vendor_id, int product_id);
-int nputil_libusb1_open(nputil_libusb1_struct* s, int vendor_id, int product_id, int index);
-int nputil_libusb1_close(nputil_libusb1_struct* s);
+#ifdef __cplusplus
+extern "C" {
+#endif
+	nputil_libusb1_struct* nputil_libusb1_create_struct();
+	void nputil_libusb1_delete_struct();
+	int nputil_libusb1_init(nputil_libusb1_struct* s);
+	int nputil_libusb1_count(nputil_libusb1_struct* s, int vendor_id, int product_id);
+	int nputil_libusb1_open(nputil_libusb1_struct* s, int vendor_id, int product_id, int index);
+	int nputil_libusb1_close(nputil_libusb1_struct* s);
+#ifdef __cplusplus
+}
+#endif
+
+#endif //NPUTIL_LIBUSB1_H
