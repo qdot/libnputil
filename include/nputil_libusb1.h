@@ -1,5 +1,5 @@
 /***
- * @file nputil_libusb-1.0.h
+ * @file nputil_libusb1.h
  * @brief LibUSB 1.0 (http://www.libusb.org/) utility functions
  * @author Kyle Machulis (kyle@nonpolynomial.com)
  * @copyright (c) 2009 Nonpolynomial Labs/Kyle Machulis
