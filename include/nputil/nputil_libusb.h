@@ -12,11 +12,13 @@
 
 #include "usb.h"
 
+#ifndef NPUTIL_LIBUSB_STRUCT
 typedef struct {
 	struct usb_dev_handle* _device;
 	int _is_open;
 	int _is_inited;
 } nputil_libusb_struct;
+#endif NPUTIL_LIBUSB_STRUCT
 
 #ifdef __cplusplus
 extern "C" {

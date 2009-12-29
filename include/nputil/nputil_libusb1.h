@@ -11,7 +11,7 @@
 #define NPUTIL_LIBUSB1_H
 #include "libusb.h"
 
-#ifndef nputil_libusb1_struct
+#ifndef NPUTIL_LIBUSB1_STRUCT
 typedef struct {
 	struct libusb_context* _context;
 	struct libusb_device_handle* _device;

@@ -43,11 +43,14 @@ INITIALIZE_BUILD()
 
 OPTION_ARCH_OPTS(ON)
 OPTION_LIBRARY_BUILD_STATIC(ON)
-OPTION_LIBRARY_BUILD_SHARED(OFF)
+OPTION_LIBRARY_BUILD_SHARED(ON)
 
 ######################################################################################
 # Project specific package finding
 ######################################################################################
+
+FIND_PACKAGE(libusb-1.0)
+FIND_PACKAGE(libusb)
 
 ######################################################################################
 # Project specific globals
@@ -82,5 +85,6 @@ CREATE_LIBRARY_LINK_NAME(nputil_libusb1)
 INCLUDE_DIRECTORIES(${LIBNPUTIL_INCLUDE_DIR})
 LINK_DIRECTORIES(${LIBRARY_OUTPUT_PATH})
 
-ADD_SUBDIRECTORY(src)
 
+ADD_SUBDIRECTORY(src)
+ADD_SUBDIRECTORY(include)
