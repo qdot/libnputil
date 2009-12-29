@@ -7,7 +7,7 @@
  *
  */
 
-#include "nputil_libusb1.h"
+#include "nputil/nputil_libusb1.h"
 #include <stdlib.h>
 
 nputil_libusb1_struct* nputil_libusb1_create_struct()

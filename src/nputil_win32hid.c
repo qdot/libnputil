@@ -7,7 +7,7 @@
  *
  */
 
-#include "nputil_win32hid.h"
+#include "nputil/nputil_win32hid.h"
 #include <setupapi.h>
 #include <hidsdi.h>
 

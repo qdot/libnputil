@@ -49,16 +49,6 @@ OPTION_LIBRARY_BUILD_SHARED(OFF)
 # Project specific package finding
 ######################################################################################
 
-IF(NOT WIN32)
-  FIND_PACKAGE(libusb-1.0 REQUIRED)
-  INCLUDE_DIRECTORIES(${LIBUSB_1_INCLUDE_DIRS})
-  SET(LIBTRANCEVIBE_DEP_LIBS ${LIBUSB_1_LIBRARIES})
-ELSE()
-  FIND_PACKAGE(libusb REQUIRED)
-  INCLUDE_DIRECTORIES(${LIBUSB_INCLUDE_DIRS})
-  SET(LIBTRANCEVIBE_DEP_LIBS ${LIBUSB_LIBRARIES})
-ENDIF()                         
-
 ######################################################################################
 # Project specific globals
 ######################################################################################
@@ -85,6 +75,7 @@ SET(LIBNPUTIL_VERSION ${LIBNPUTIL_MAJOR_VERSION}.${LIBNPUTIL_MINOR_VERSION}.${LI
 
 #library name definitions
 
+CREATE_LIBRARY_LINK_NAME(nputil_win32hid)
 CREATE_LIBRARY_LINK_NAME(nputil_libusb)
 CREATE_LIBRARY_LINK_NAME(nputil_libusb1)
 

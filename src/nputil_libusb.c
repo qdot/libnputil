@@ -1,13 +1,13 @@
 /***
- * @file nputil_libusb1.c
- * @brief LibUSB 1.0 (http://www.libusb.org/) utility functions
+ * @file nputil_libusb.c
+ * @brief LibUSB 0.1 (http://www.libusb.org/) utility functions
  * @author Kyle Machulis (kyle@nonpolynomial.com)
  * @copyright (c) 2009 Nonpolynomial Labs/Kyle Machulis
  * @license BSD License
  *
  */
 
-#include "nputil_libusb1.h"
+#include "nputil/nputil_libusb.h"
 #include <stdlib.h>
 
 nputil_libusb_struct* nputil_libusb_create_struct()
@@ -51,7 +51,7 @@ int nputil_libusb_count(nputil_libusb_struct* s, int vendor_id, int product_id)
 	return device_count;
 }
 
-int nputil_libusb_open(nputil_libusb_struct* s, int vendor_id, int product_id, int index)
+int nputil_libusb_open(nputil_libusb_struct* s, int vendor_id, int product_id, int device_index)
 {
 	int device_count = 0;
 	struct usb_bus* bus;
