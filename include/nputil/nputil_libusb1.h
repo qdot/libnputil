@@ -9,7 +9,7 @@
 
 #ifndef NPUTIL_LIBUSB1_H
 #define NPUTIL_LIBUSB1_H
-#include "libusb.h"
+#include "libusb-1.0/libusb.h"
 
 #ifndef NPUTIL_LIBUSB1_STRUCT
 typedef struct {
