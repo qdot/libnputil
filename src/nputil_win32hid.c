@@ -11,6 +11,7 @@
 
 #include <setupapi.h>
 #include <hidsdi.h>
+#include <stdlib.h>
 
 //Application global variables 
 DWORD								ActualBytesRead;
