@@ -9,6 +9,8 @@
 
 #include "nputil/nputil_win32hid.h"
 
+#include <setupapi.h>
+#include <hidsdi.h>
 
 //Application global variables 
 DWORD								ActualBytesRead;
@@ -31,6 +33,8 @@ char								OutputReport[256];
 DWORD								ReportType;
 ULONG								Required;
 TCHAR*								ValueToDisplay;
+HIDP_CAPS							Capabilities;
+
 
 nputil_win32hid_struct* nputil_win32hid_create_struct()
 {
@@ -293,4 +297,24 @@ void nputil_win32hid_close(nputil_win32hid_struct* dev)
 {
 	dev->_is_open = 0;
 	CloseHandle(dev->_device);
+}
+
+int nputil_win32hid_read(nputil_win32hid_struct* dev, unsigned char* report, unsigned int report_length)
+{
+	DWORD transferred;
+	int t;
+	t = ReadFile 
+		(dev->_device,
+		 report,
+		 Capabilities.InputReportByteLength,
+		 &transferred,
+		 NULL);
+	if(t <= 0)
+	{
+		return t;
+	}
+	//There's a padding byte at the beginning
+	//Copy over that so it looks like what libusb gives us.
+	memcpy(report, report + 1, report_length);
+	return transferred - 1;
 }
