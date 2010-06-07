@@ -8,13 +8,11 @@
  */
 
 #include "nputil/nputil_win32hid.h"
-#include <setupapi.h>
-#include <hidsdi.h>
+
 
 //Application global variables 
 DWORD								ActualBytesRead;
 DWORD								BytesRead;
-HIDP_CAPS							Capabilities;
 DWORD								cbBytesRead;
 PSP_DEVICE_INTERFACE_DETAIL_DATA	detailData;
 DWORD								dwError;
@@ -83,7 +81,7 @@ void GetDeviceCapabilities(HANDLE DeviceHandle)
 	HidD_FreePreparsedData(PreparsedData);
 }
 
-int nputil_win32hid_open_func(np_win32hid_struct* dev, unsigned int vendor_id, unsigned int product_id, unsigned int device_index, int get_count)
+int nputil_win32hid_open_func(nputil_win32hid_struct* dev, unsigned int vendor_id, unsigned int product_id, unsigned int device_index, int get_count)
 {	
 	//Use a series of API calls to find a HID with a specified Vendor IF and Product ID.
 
@@ -96,7 +94,7 @@ int nputil_win32hid_open_func(np_win32hid_struct* dev, unsigned int vendor_id, u
 
 	Length = 0;
 	detailData = NULL;
-	*(dev->_device) = NULL;
+	dev->_device = NULL;
 
 	/*
 	API function: HidD_GetHidGuid
@@ -209,7 +207,7 @@ int nputil_win32hid_open_func(np_win32hid_struct* dev, unsigned int vendor_id, u
 			*/
 
 
-			*(dev->_device) =CreateFile 
+			dev->_device =CreateFile 
 				(detailData->DevicePath, 
 				GENERIC_READ | GENERIC_WRITE,  
 				FILE_SHARE_READ|FILE_SHARE_WRITE, 
@@ -232,8 +230,8 @@ int nputil_win32hid_open_func(np_win32hid_struct* dev, unsigned int vendor_id, u
 
 			Attributes.Size = sizeof(Attributes);
 
-			Result = HidD_GetAttributes 
-				(*(dev->_device),
+			Result = HidD_GetAttributes( 
+				dev->_device,
 				&Attributes);
 			
 			//Is it the desired device?
@@ -245,19 +243,19 @@ int nputil_win32hid_open_func(np_win32hid_struct* dev, unsigned int vendor_id, u
 				if(get_count)
 				{
 					++device_count;
-					CloseHandle(*(dev->_device));
+					CloseHandle(dev->_device);
 				}
 				else
 				{
 					MyDeviceDetected = TRUE;
 					MyDevicePathName = detailData->DevicePath;
-					GetDeviceCapabilities(*(dev->_device));
+					GetDeviceCapabilities(dev->_device);
 					break;
 				}
 			}
 			else
 			{
-				CloseHandle(*(dev->_device));
+				CloseHandle(dev->_device);
 			}
 			free(detailData);
 		}  //if (Result != 0)
@@ -273,22 +271,26 @@ int nputil_win32hid_open_func(np_win32hid_struct* dev, unsigned int vendor_id, u
 	while (!LastDevice);
 	SetupDiDestroyDeviceInfoList(hDevInfo);
 	if(get_count) return device_count;
-	if(MyDeviceDetected) return 0;
+	if(MyDeviceDetected)
+	{
+		dev->_is_open = 1;
+		return 0;
+	}
 	return -1;
 }
 
-int nputil_win32hid_count(np_win32hid_struct* dev)
+int nputil_win32hid_count(nputil_win32hid_struct* dev, unsigned int vendor_id, unsigned int product_id)
 {
-	np_win32hid_struct test;
-	return np_win32hid_struct_open_win32(&test, 0, 1);
+	return nputil_win32hid_open_func(dev, vendor_id, product_id, 0, 1);
 }
 
-int nputil_win32hid_open(np_win32hid_struct* dev, unsigned int vendor_id, unsigned int product_id, unsigned int device_index)
+int nputil_win32hid_open(nputil_win32hid_struct* dev, unsigned int vendor_id, unsigned int product_id, unsigned int device_index)
 {
 	return nputil_win32hid_open_func(dev, vendor_id, product_id, device_index, 0);
 }
 
-void nputil_win32hid_close(np_win32hid_struct* dev)
+void nputil_win32hid_close(nputil_win32hid_struct* dev)
 {
+	dev->_is_open = 0;
 	CloseHandle(dev->_device);
 }
