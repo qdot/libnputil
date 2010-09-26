@@ -7,27 +7,31 @@
  *
  */
 
-#include "nputil/nputil_libusb1.h"
+#include "libusb-1.0/libusb.h"
 #include <stdlib.h>
 
-nputil_libusb1_struct* nputil_libusb1_create_struct()
+#define FNNAME(pre, post)  pre ## _ ## post
+#define FNAME(pre, post) FNNAME(pre, post)
+#define FUNCNAME(post) FNAME(NPUTIL_DEVICE_NAME, post)
+
+NPUTIL_DEVICE_NAME* FUNCNAME(create)()
 {
-	nputil_libusb1_struct* s = (nputil_libusb1_struct*)malloc(sizeof(nputil_libusb1_struct));
+	NPUTIL_DEVICE_NAME* s = (NPUTIL_DEVICE_NAME*)malloc(sizeof(NPUTIL_DEVICE_NAME));
 	s->_is_open = 0;
 	s->_is_inited = 0;
 	return s;
 }
 
-void nputil_libusb1_delete_struct(nputil_libusb1_struct* s)
+void FUNCNAME(delete)(NPUTIL_DEVICE_NAME* s)
 {
 	free(s);
 }
 
-int nputil_libusb1_init(nputil_libusb1_struct* s)
+int FUNCNAME(init)(NPUTIL_DEVICE_NAME* s)
 {
 	if(libusb_init(&s->_context) < 0)
 	{
-		return -1;
+		return E_NPUTIL_DRIVER_ERROR;
 	}
 #if defined(LIBUSB_DEBUG)
 	//Spam libusb messages
@@ -39,7 +43,7 @@ int nputil_libusb1_init(nputil_libusb1_struct* s)
 	s->_is_inited = 1;
 }
 
-int nputil_libusb1_count(nputil_libusb1_struct* s, int vendor_id, int product_id)
+int FUNCNAME(get_count)(NPUTIL_DEVICE_NAME* s)
 {
 	struct libusb_device **devs;
 	struct libusb_device *found = NULL;
@@ -47,9 +51,14 @@ int nputil_libusb1_count(nputil_libusb1_struct* s, int vendor_id, int product_id
 	size_t i = 0;
 	int count = 0;
 
+	if (!s->_is_inited)
+	{
+		return E_NPUTIL_NOT_INITED;
+	}
+	
 	if (libusb_get_device_list(s->_context, &devs) < 0)
 	{
-		return -1;
+		return E_NPUTIL_DRIVER_ERROR;
 	}
 
 	while ((dev = devs[i++]) != NULL)
@@ -61,7 +70,7 @@ int nputil_libusb1_count(nputil_libusb1_struct* s, int vendor_id, int product_id
 		{
 			break;
 		}
-		if (desc.idVendor == vendor_id && desc.idProduct == product_id)
+		if (desc.idVendor == NPUTIL_USB_VID && desc.idProduct == NPUTIL_USB_PID)
 		{
 			++count;
 		}
@@ -71,7 +80,7 @@ int nputil_libusb1_count(nputil_libusb1_struct* s, int vendor_id, int product_id
 	return count;
 }
 
-int nputil_libusb1_open(nputil_libusb1_struct* s, int vendor_id, int product_id, int index)
+int FUNCNAME(open)(NPUTIL_DEVICE_NAME* s, unsigned int index)
 {
 	struct libusb_device **devs;
 	struct libusb_device *found = NULL;
@@ -80,9 +89,14 @@ int nputil_libusb1_open(nputil_libusb1_struct* s, int vendor_id, int product_id,
 	int count = 0;
 	int device_error_code = 0;
 
+	if (!s->_is_inited)
+	{
+		return E_NPUTIL_NOT_INITED;
+	}
+
 	if ((device_error_code = libusb_get_device_list(s->_context, &devs)) < 0)
 	{
-		return -1;
+		return E_NPUTIL_DRIVER_ERROR;
 	}
 
 	while ((dev = devs[i++]) != NULL)
@@ -92,9 +106,9 @@ int nputil_libusb1_open(nputil_libusb1_struct* s, int vendor_id, int product_id,
 		if (device_error_code < 0)
 		{
 			libusb_free_device_list(devs, 1);
-			return -1;
+			return E_NPUTIL_NOT_INITED;
 		}
-		if (desc.idVendor == vendor_id && desc.idProduct == product_id)
+		if (desc.idVendor == NPUTIL_USB_VID && desc.idProduct == NPUTIL_USB_PID)
 		{
 			if(count == index)
 			{
@@ -111,23 +125,26 @@ int nputil_libusb1_open(nputil_libusb1_struct* s, int vendor_id, int product_id,
 		if (device_error_code < 0)
 		{
 			libusb_free_device_list(devs, 1);
-			return -1;
+			return E_NPUTIL_NOT_INITED;
 		}
 	}
 	else
 	{
-		return -1;
+		return E_NPUTIL_NOT_INITED;		
 	}
 	s->_is_open = 1;
 	return 0;
 }
 
-int nputil_libusb1_close(nputil_libusb1_struct *s)
+int FUNCNAME(close)(NPUTIL_DEVICE_NAME *s)
 {
-	
+	if(!s->_is_open)
+	{
+		return E_NPUTIL_NOT_OPENED;
+	}
 	if (libusb_release_interface(s->_device, 0) < 0)
 	{
-		return -1;
+		return E_NPUTIL_NOT_INITED;				
 	}
 	libusb_close(s->_device);
 	s->_is_open = 0;

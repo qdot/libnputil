@@ -11,6 +11,10 @@
 #define NPUTIL_LIBUSB1_H
 #include "libusb-1.0/libusb.h"
 
+#define E_NPUTIL_DRIVER_ERROR -1
+#define E_NPUTIL_NOT_INITED -2
+#define E_NPUTIL_NOT_OPENED -3
+
 #ifndef NPUTIL_LIBUSB1_STRUCT
 typedef struct {
 	struct libusb_context* _context;
