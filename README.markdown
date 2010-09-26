@@ -1,4 +1,4 @@
-# libomron
+# libnputil
 
 by Kyle Machulis
 
