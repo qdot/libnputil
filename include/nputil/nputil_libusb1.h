@@ -7,6 +7,11 @@
  *
  */
 
+// So you're probably all thinking, "Hey! This is a header
+// file!". Well, it's not. It's a template. This is to be cut and
+// pasted into another library and the names in it replaced. Why? Read
+// the readme.
+
 #ifndef NPUTIL_LIBUSB1_H
 #define NPUTIL_LIBUSB1_H
 #include "libusb-1.0/libusb.h"
