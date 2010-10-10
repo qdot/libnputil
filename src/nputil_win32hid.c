@@ -13,6 +13,10 @@
 #include <hidsdi.h>
 #include <stdlib.h>
 
+#define FNNAME(pre, post)  pre ## _ ## post
+#define FNAME(pre, post) FNNAME(pre, post)
+#define FUNCNAME(post) FNAME(NPUTIL_DEVICE_NAME, post)
+
 //Application global variables 
 DWORD								ActualBytesRead;
 DWORD								BytesRead;
@@ -36,19 +40,6 @@ ULONG								Required;
 TCHAR*								ValueToDisplay;
 HIDP_CAPS							Capabilities;
 
-
-nputil_win32hid_struct* nputil_win32hid_create_struct()
-{
-	nputil_win32hid_struct* s = (nputil_win32hid_struct*)malloc(sizeof(nputil_win32hid_struct));
-	s->_is_open = 0;
-	s->_is_inited = 0;
-	return s;
-}
-
-void nputil_win32hid_delete_struct(nputil_win32hid_struct* d)
-{
-	free(d);
-}
 
 void GetDeviceCapabilities(HANDLE DeviceHandle)
 {
@@ -86,7 +77,20 @@ void GetDeviceCapabilities(HANDLE DeviceHandle)
 	HidD_FreePreparsedData(PreparsedData);
 }
 
-int nputil_win32hid_open_func(nputil_win32hid_struct* dev, unsigned int vendor_id, unsigned int product_id, unsigned int device_index, int get_count)
+NPUTIL_DEVICE_NAME* FUNCNAME(create)()
+{
+	NPUTIL_DEVICE_NAME* s = (NPUTIL_DEVICE_NAME*)malloc(sizeof(NPUTIL_DEVICE_NAME));
+	s->_is_open = 0;
+	s->_is_inited = 0;
+	return s;
+}
+
+void FUNCNAME(delete)(NPUTIL_DEVICE_NAME* d)
+{
+	free(d);
+}
+
+int FUNCNAME(open_func)(NPUTIL_DEVICE_NAME* dev, unsigned int vendor_id, unsigned int product_id, unsigned int device_index, int get_count)
 {	
 	//Use a series of API calls to find a HID with a specified Vendor IF and Product ID.
 
@@ -284,23 +288,23 @@ int nputil_win32hid_open_func(nputil_win32hid_struct* dev, unsigned int vendor_i
 	return -1;
 }
 
-int nputil_win32hid_count(nputil_win32hid_struct* dev, unsigned int vendor_id, unsigned int product_id)
+int FUNCNAME(count)(NPUTIL_DEVICE_NAME* dev, unsigned int vendor_id, unsigned int product_id)
 {
-	return nputil_win32hid_open_func(dev, vendor_id, product_id, 0, 1);
+	return FUNCNAME(open_func)(dev, vendor_id, product_id, 0, 1);
 }
 
-int nputil_win32hid_open(nputil_win32hid_struct* dev, unsigned int vendor_id, unsigned int product_id, unsigned int device_index)
+int FUNCNAME(open)(NPUTIL_DEVICE_NAME* dev, unsigned int vendor_id, unsigned int product_id, unsigned int device_index)
 {
-	return nputil_win32hid_open_func(dev, vendor_id, product_id, device_index, 0);
+	return FUNCNAME(open_func)(dev, vendor_id, product_id, device_index, 0);
 }
 
-void nputil_win32hid_close(nputil_win32hid_struct* dev)
+void FUNCNAME(close)(NPUTIL_DEVICE_NAME* dev)
 {
 	dev->_is_open = 0;
 	CloseHandle(dev->_device);
 }
 
-int nputil_win32hid_read(nputil_win32hid_struct* dev, unsigned char* report, unsigned int report_length)
+int FUNCNAME(read)(NPUTIL_DEVICE_NAME* dev, unsigned char* report, unsigned int report_length)
 {
 	DWORD transferred;
 	int t;

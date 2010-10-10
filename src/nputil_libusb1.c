@@ -43,7 +43,7 @@ int FUNCNAME(init)(NPUTIL_DEVICE_NAME* s)
 	s->_is_inited = 1;
 }
 
-int FUNCNAME(get_count)(NPUTIL_DEVICE_NAME* s)
+int FUNCNAME(get_count)(NPUTIL_DEVICE_NAME* s, unsigned int device_vid, unsigned int device_pid)
 {
 	struct libusb_device **devs;
 	struct libusb_device *found = NULL;
@@ -70,7 +70,7 @@ int FUNCNAME(get_count)(NPUTIL_DEVICE_NAME* s)
 		{
 			break;
 		}
-		if (desc.idVendor == NPUTIL_USB_VID && desc.idProduct == NPUTIL_USB_PID)
+		if (desc.idVendor == device_vid && desc.idProduct == device_pid)
 		{
 			++count;
 		}
@@ -80,7 +80,7 @@ int FUNCNAME(get_count)(NPUTIL_DEVICE_NAME* s)
 	return count;
 }
 
-int FUNCNAME(open)(NPUTIL_DEVICE_NAME* s, unsigned int index)
+int FUNCNAME(open)(NPUTIL_DEVICE_NAME* s, unsigned int device_vid, unsigned int device_pid, unsigned int index)
 {
 	struct libusb_device **devs;
 	struct libusb_device *found = NULL;
@@ -108,7 +108,7 @@ int FUNCNAME(open)(NPUTIL_DEVICE_NAME* s, unsigned int index)
 			libusb_free_device_list(devs, 1);
 			return E_NPUTIL_NOT_INITED;
 		}
-		if (desc.idVendor == NPUTIL_USB_VID && desc.idProduct == NPUTIL_USB_PID)
+		if (desc.idVendor == device_vid && desc.idProduct == device_pid)
 		{
 			if(count == index)
 			{
